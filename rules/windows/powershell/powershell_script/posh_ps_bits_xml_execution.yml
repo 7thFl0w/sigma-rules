@@ -1,0 +1,33 @@
+title: PowerShell BITS Transfer or XML Payload Execution
+id: 9bce18ab-1e3c-492f-bcda-1722efe5ece7
+status: test
+description: Detects the use of PowerShell to download remote content via BITS (Background Intelligent Transfer Service) or the loading of malicious XML-based payloads, followed by immediate execution in memory using Invoke-Expression (IEX)
+references:
+    - https://gist.github.com/HarmJ0y/bb48307ffa663256e239
+author: 7thFl0w
+date: 2026-05-04 
+tags: 
+    - attack.execution
+    - attack.t1059.001
+    - attack.command_and_control
+    - attack.t1105
+    - attack.defense_evasion
+    - attack.t1027
+    - attack.t1197
+logsource:
+    product: windows
+    service: powershell
+detection:
+    selection_bits:
+        ScriptBlockText|contains:
+            - 'Start-BitsTransfer'
+    selection_xml:
+        ScriptBlockText|contains:
+            - 'System.Xml.XmlDocument'
+            - '.Load('
+    selection_iex:
+        ScriptBlockText|contains:
+            - 'iex'
+            - 'Invoke-Expression'
+    condition: 1 of selection_*
+level: high
