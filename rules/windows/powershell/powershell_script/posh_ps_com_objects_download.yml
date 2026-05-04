@@ -1,0 +1,31 @@
+title: PowerShell Download and Execution via COM Objects
+id: 44b9cec8-c434-407b-9c5a-5712a88b3efd
+status: test
+description: Detects the use of PowerShell to instantiate specific COM objects
+references:
+    - https://gist.github.com/HarmJ0y/bb48307ffa663256e239
+author: 7thFl0w
+date: 2026-05-04
+tags:
+    - attack.execution
+    - attack.t1059.001
+    - attack.command_and_control
+    - attack.t1105
+    - attack.defense_evasion
+    - attack.t1548
+    - attack.t1559.001
+logsource:
+    product: windows
+    service: powershell
+detection:
+    selection:
+        ScriptBlockText|contains:
+            - 'Msxml2.XMLHTTP'
+            - 'WinHttp.WinHttpRequest'
+            - 'InternetExplorer.Application'
+    selection_exec:
+        ScriptBlockText|contains:
+            - 'iex'
+            - 'Invoke-Expression'
+    condition: selection and selection_exec
+level: critical

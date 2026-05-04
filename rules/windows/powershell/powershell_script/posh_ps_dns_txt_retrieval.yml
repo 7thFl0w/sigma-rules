@@ -1,0 +1,33 @@
+title: PowerShell Remote Content Retrieval via DNS TXT Records
+id: 91add623-e5cc-431f-817c-435ef10ee220
+status: test
+description: Detects PowerShell activity that queries DNS TXT records (typically using nslookup or Resolve-DnsName) to retrieve remotely hosted payloads, followed by Base64 decoding
+references:
+    - https://gist.github.com/HarmJ0y/bb48307ffa663256e239
+author: 7thFl0w
+date: 2026-05-04 
+tags: 
+    - attack.execution
+    - attack.t1059.001
+    - attack.command_and_control
+    - attack.t1105
+    - attack.defense_evasion
+    - attack.t1071.004
+    - attack.t1132.001
+    - attack.t1568
+logsource:
+    product: windows
+    service: powershell
+detection:
+    selection:
+        ScriptBlockText|contains:
+            - 'nslookup'
+    selection_type:
+        ScriptBlockText|contains:
+            - 'querytype=txt'
+            - '-q=txt'
+    selection_decode:
+        ScriptBlockText|contains:
+            - 'FromBase64String'
+    condition: all of selection*
+level: critical

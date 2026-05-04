@@ -1,0 +1,33 @@
+title: PowerShell Network Download Cradle Detection
+id: 06b937c6-e07f-43cc-9378-4acbe40bf030
+status: test
+description: Detects the behavior of using PowerShell to download scripts from a remote source and execute them immediately
+references:
+    - https://gist.github.com/HarmJ0y/bb48307ffa663256e239
+author: 7thFl0w
+date: 2026-05-04 
+tags: 
+    - attack.execution
+    - attack.t1059.001
+    - attack.command_and_control
+    - attack.t1105
+    - attack.defense_evasion
+logsource:
+    product: windows
+    service: powershell
+detection:
+    selection_iex:
+        ScriptBlockText|contains: 
+            - 'iex'
+            - 'Invoke-Expression'
+    selection_method:
+        ScriptBlockText|contains:
+            - '.DownloadString'
+            - '.DownloadFile'
+            - 'Invoke-WebRequest'
+            - 'iwr '
+            - 'Net.WebClient'
+    condition: selection_iex and selection_method
+falsepositives:
+    - Automated maintenance scripts executed by administrators
+level: high
