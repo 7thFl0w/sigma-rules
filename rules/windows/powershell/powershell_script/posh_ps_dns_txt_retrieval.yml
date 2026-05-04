@@ -17,7 +17,7 @@ tags:
     - attack.t1568
 logsource:
     product: windows
-    service: powershell
+    category: ps_script
 detection:
     selection:
         ScriptBlockText|contains:
@@ -30,4 +30,6 @@ detection:
         ScriptBlockText|contains:
             - 'FromBase64String'
     condition: all of selection*
+falsepositives:
+    - Highly specialized administrative or network diagnostic scripts (extremely rare)
 level: critical

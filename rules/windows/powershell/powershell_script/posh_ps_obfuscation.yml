@@ -1,0 +1,75 @@
+title: Suspicious PowerShell Obfuscation and Evasion Techniques
+id: b384f76b-2073-467b-b903-799a33a56e60
+status: test
+description: Detects various PowerShell script obfuscation techniques, including string joining, environment variable manipulation, alias/variable abuse for Invoke-Expression (iex), and DNS TXT payload retrieval
+references:
+    - https://www.securonix.com/blog/hiding-the-powershell-execution-flow/
+author: 7thFl0w
+date: 2026-05-04 
+tags: 
+    - attack.execution
+    - attack.t1059.001
+    - attack.defense_evasion
+    - attack.t1027
+logsource:
+    product: windows
+    category: ps_script
+detection:
+    selection_1:
+        ScriptBlockText|contains|all:
+            - '$env:comspec['
+            - '-join'
+    selection_2:
+        ScriptBlockText|contains:
+            - '$pshome['
+            - '$shellid['
+    selection_3:
+        ScriptBlockText|contains|all:
+            - '[char[]]'
+            - '-join'
+    selection_4_cmd:
+        ScriptBlockText|contains:
+            - '.(gal '
+            - '.(Get-Alias '
+    selection_4_args:
+        ScriptBlockText|contains:
+            - ' ?e[?x])'
+            - ' ?e[??x])'
+            - ' ie[?x])'
+            - ' ie[??x])'
+            - ' i?[?x])'
+            - ' ie[?x])'
+            - ' ie[??x])'
+            - ' ie?)'
+            - ' ?ex)'
+    selection_5_cmd:
+        ScriptBlockText|contains:
+            - '.(GV '
+            - '.(Get-Variable '
+    selection_5_args:
+        ScriptBlockText|contains:
+            - '.name[3,11,2]'
+            - '-join'
+    selection_6_brace:
+        ScriptBlockText|contains:
+            - '}{0}'
+            - '} {0}'
+    selection_6_format:
+        ScriptBlockText|contains:
+            - ' -f'
+    selection_7:
+        ScriptBlockText|contains|all:
+            - 'nslookup'
+            - ' -q=txt '
+            - '[-1]'
+    condition: >
+        selection_1 or 
+        selection_2 or
+        selection_3 or 
+        (selection_4_cmd and selection_4_args) or 
+        (selection_5_cmd and selection_5_args) or 
+        (selection_6_brace and selection_6_format) or 
+        selection_7
+falsepositives:
+    - Highly obfuscated administrative scripts (rare)
+level: high

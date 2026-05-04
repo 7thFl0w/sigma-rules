@@ -14,7 +14,7 @@ tags:
     - attack.defense_evasion
 logsource:
     product: windows
-    service: powershell
+    category: ps_script
 detection:
     selection_iex:
         ScriptBlockText|contains: 

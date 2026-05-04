@@ -16,18 +16,21 @@ tags:
     - attack.t1197
 logsource:
     product: windows
-    service: powershell
+    category: ps_script
 detection:
     selection_bits:
         ScriptBlockText|contains:
             - 'Start-BitsTransfer'
     selection_xml:
-        ScriptBlockText|contains:
+        ScriptBlockText|contains|all:
             - 'System.Xml.XmlDocument'
             - '.Load('
     selection_iex:
         ScriptBlockText|contains:
             - 'iex'
             - 'Invoke-Expression'
-    condition: 1 of selection_*
+    condition: (selection_bits or selection_xml) and selection_iex
+falsepositives:
+    - Legitimate IT administration scripts using BITS to download software patches, updates, or large files
+    - Complex administrative scripts that parse XML configuration files to dynamically build and execute commands
 level: high

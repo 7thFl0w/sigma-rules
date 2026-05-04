@@ -16,7 +16,7 @@ tags:
     - attack.t1559.001
 logsource:
     product: windows
-    service: powershell
+    category: ps_script
 detection:
     selection:
         ScriptBlockText|contains:
@@ -28,4 +28,6 @@ detection:
             - 'iex'
             - 'Invoke-Expression'
     condition: selection and selection_exec
+falsepositives:
+    - Legacy administrative scripts used for remote software deployment or configuration management
 level: critical
