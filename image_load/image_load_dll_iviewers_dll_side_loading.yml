@@ -1,0 +1,30 @@
+title: Suspicious iviewers.dll Side-Loading Activity Associated with PlugX / Velvet Ant Campaign
+id: 06df5589-6e3f-4d71-88e2-7bc819098c19
+status: test
+description: Detects potential DLL side-loading activity involving iviewers.dll loaded outside expected Windows Kits directories. This behavior has been observed in threat activity associated with PlugX malware deployments linked to the Velvet Ant cluster.
+references:
+    - https://www.sygnia.co/blog/china-nexus-threat-group-velvet-ant/
+author: 7thFl0w
+date: 2026-06-17 
+tags:
+    - attack.defense_evasion
+    - attack.execution
+    - attack.t1574.001
+    - malware.plugx
+    - d3f:FileAnalysis
+    - d3f:DynamicAnalysis
+    - d3f:ProcessAnalysis
+logsource:
+    product: windows
+    category: image_load
+detection:
+    selection:
+        ImageLoaded|endswith: '\iviewers.dll'
+    filter:
+        ImageLoaded|contains:
+            - '\Program Files\Windows Kits\'
+            - '\Program Files (x86)\Windows Kits\'
+    condition: selection and not filter
+falsepositives:
+    - Custom applications using bundled or relocated libraries
+level: high

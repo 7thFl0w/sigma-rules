@@ -1,0 +1,60 @@
+title: BITS Transfer Job From File Sharing Domains
+id: 38dee950-00a7-46a1-8ff4-39e83453ee9a
+status: test
+description: Port of the SigmaHQ file sharing domain rule to the BITS transfer events EventID 59 and 61, because the SigmaHQ rule depends on EventID 16403 which is absent from the analysed log. storage.googleapis.com and github.com are left out on purpose since the Chrome component updater legitimately uses storage.googleapis.com through BITS.
+references:
+    - https://github.com/SigmaHQ/sigma/blob/master/rules/windows/builtin/bits_client/win_bits_client_new_transfer_via_file_sharing_domains.yml
+    - https://attack.mitre.org/techniques/T1197/
+    - https://attack.mitre.org/techniques/T1105/
+author: 7thFl0w
+date: 2026-11-02
+tags:
+    - attack.stealth
+    - attack.persistence
+    - attack.t1197
+    - attack.command-and-control
+    - attack.t1105
+    - d3fend.d3-ua
+logsource:
+    product: windows
+    service: bits-client
+detection:
+    selection:
+        EventID:
+            - 59
+            - 61
+        url|contains:
+            - '.githubusercontent.com'
+            - '.pages.dev'
+            - '.trycloudflare.com'
+            - '.w3spaces.com'
+            - '.workers.dev'
+            - 'anonfiles.com'
+            - 'cdn.discordapp.com'
+            - 'ddns.net'
+            - 'dl.dropboxusercontent.com'
+            - 'ghostbin.co'
+            - 'glitch.me'
+            - 'gofile.io'
+            - 'hastebin.com'
+            - 'mediafire.com'
+            - 'mega.nz'
+            - 'onrender.com'
+            - 'paste.ee'
+            - 'pastebin.com'
+            - 'pastebin.pl'
+            - 'pastetext.net'
+            - 'pixeldrain.com'
+            - 'privatlab.com'
+            - 'privatlab.net'
+            - 'send.exploit.in'
+            - 'sendspace.com'
+            - 'storjshare.io'
+            - 'supabase.co'
+            - 'temp.sh'
+            - 'transfer.sh'
+            - 'ufile.io'
+    condition: selection
+falsepositives:
+    - Legitimate software distributed from Cloudflare Pages, Workers or Dropbox through BITS
+level: medium

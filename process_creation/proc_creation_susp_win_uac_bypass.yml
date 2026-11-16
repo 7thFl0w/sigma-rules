@@ -1,0 +1,55 @@
+title: Suspicious Auto-Approved Executable Child Process Execution
+id: fe02dc00-df61-48ed-880a-4a29decb3d6b
+status: test
+description: Detects process creation events where the parent process is a known auto-elevated or UAC bypass-associated Windows binary frequently abused to execute payloads with elevated privileges without triggering User Account Control (UAC) prompts.
+author: 7thFl0w
+date: 2026-05-11 
+tags: 
+    - attack.privilege_escalation
+    - attack.t1548.002
+    - attack.execution
+    - attack.defense_evasion
+    - d3fend.d3-eal
+    - detection.uac_bypass
+    - detection.autoelevate_abuse
+    - detection.lolbin_abuse
+logsource:
+    product: windows
+    category: process_creation
+detection:
+    selection:
+        ParentImage|endswith:
+            - 'bthudtask.exe'
+            - 'dcomcnfg.exe'
+            - 'DeviceEject.exe'
+            - 'DeviceProperties.exe'
+            - 'djoin.exe'
+            - 'easinvoker.exe'
+            - 'EASPolicyManagerBrokerHost.exe'
+            - 'eudcedit.exe'
+            - 'fsquirt.exe'
+            - 'FXSUNATD.exe'
+            - 'immersivetpmvscmgrsvr.exe'
+            - 'lpksetup.exe'
+            - 'MSchedExe.exe'
+            - 'msra.exe'
+            - 'MultiDigiMon.exe'
+            - 'newdev.exe'
+            - 'odbcad32.exe'
+            - 'PasswordOnWakeSettingFlyout.exe'
+            - 'rdpinit.exe'
+            - 'rdpshell.exe'
+            - 'rrinstaller.exe'
+            - 'shrpubw.exe'
+            - 'SystemSettingsAdminFlows.exe'
+            - 'SystemSettingsRemoveDevice.exe'
+            - 'Taskmgr.exe'
+            - 'tcmsetup.exe'
+            - 'WindowsUpdateElevatedInstaller.exe'
+    condition: selection
+falsepositives:
+    - Legitimate administrative activity spawning child processes from trusted Windows utilities
+    - Software installation or Windows feature configuration activity
+    - Enterprise management or automation tools invoking elevated Windows binaries
+    - Security products or EDR remediation workflows leveraging trusted auto-elevated binaries
+level: medium

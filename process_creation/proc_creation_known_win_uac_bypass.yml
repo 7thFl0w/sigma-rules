@@ -1,0 +1,75 @@
+title: Suspicious Child Process Spawned From Auto-Elevated Windows Binary
+id: 9f8f7e22-7016-4ba1-a4c7-e788f7c575fe
+status: test
+description: Detects process creation events where the parent process is a known auto-elevated or UAC bypass-associated Windows binary frequently abused to execute payloads with elevated privileges without triggering User Account Control (UAC) prompts.
+references:
+    - https://github.com/hfiref0x/UACME
+    - https://enigma0x3.net/
+author: 7thFl0w
+date: 2026-05-11 
+tags: 
+    - attack.privilege_escalation
+    - attack.t1548.002
+    - attack.execution
+    - attack.defense_evasion
+    - d3fend.d3-eal
+    - detection.uac_bypass
+    - detection.autoelevate_abuse
+    - detection.lolbin_abuse
+logsource:
+    product: windows
+    category: process_creation
+detection:
+    selection:
+        ParentImage|endswith:
+            - '\sysprep.exe'
+            - '\setupsqm.exe'
+            - '\cliconfg.exe'
+            - '\mcx2prov.exe'
+            - '\migwiz.exe'
+            - '\winsat.exe'
+            - '\iscsicli.exe'
+            - '\mmc.exe'
+            - '\credwiz.exe'
+            - '\oobe.exe'
+            - '\GWXUXWorker.exe'
+            - '\inetmgr.exe'
+            - '\taskhost.exe'
+            - '\tzsync.exe'
+            - '\consent.exe'
+            - '\pkgmgr.exe'
+            - '\CompMgmtLauncher.exe'
+            - '\EventVwr.exe'
+            - '\dismhost.exe'
+            - '\sdclt.exe'
+            - '\wusa.exe'
+            - '\osk.exe'
+            - '\fodhelper.exe'
+            - '\dccw.exe'
+            - '\recdisc.exe'
+            - '\slui.exe'
+            - '\BitlockerWizardElev.exe'
+            - '\TpmInit.exe'
+            - '\rstrui.exe'
+            - '\msconfig.exe'
+            - '\WSReset.exe'
+            - '\clipup.exe'
+            - '\changepk.exe'
+            - '\computerdefaults.exe'
+            - '\taskhostw.exe'
+            - '\msdt.exe'
+            - '\sdiagnhost.exe'
+            - '\iscsicpl.exe'
+            - '\QuickAssist.exe'
+    selection_systemproperties:
+        ParentImage|contains:
+            - '\SystemProperties'
+        ParentImage|endswith:
+            - '.exe'
+    condition: 1 of selection*
+falsepositives:
+    - Legitimate administrative activity spawning child processes from trusted Windows utilities
+    - Software installation or Windows feature configuration activity
+    - Enterprise management or automation tools invoking elevated Windows binaries
+    - Security products or EDR remediation workflows leveraging trusted auto-elevated binaries
+level: medium

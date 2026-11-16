@@ -1,0 +1,29 @@
+title: DirectInput MostRecentApplication Registry Value Set by Non-Standard Process Path
+id: 8c5e2f19-7a3b-4d60-b1e4-92f0a6d3c785
+status: experimental
+description: Detects a process running from outside standard installation directories writing to the DirectInput MostRecentApplication registry key, which indicates DirectInput API usage and may be associated with keylogging tools.
+references:
+    - https://attack.mitre.org/techniques/T1056/001/
+    - https://github.com/sbousseaden/EVTX-ATTACK-SAMPLES
+author: 7thFl0w
+date: 2026-11-12
+tags:
+    - attack.collection
+    - attack.credential-access
+    - attack.t1056.001
+    - d3f:ProcessAnalysis
+logsource:
+    product: windows
+    category: registry_set
+detection:
+    selection:
+        TargetObject|contains: '\DirectInput\MostRecentApplication\'
+    filter_main_trusted_paths:
+        Image|startswith:
+            - 'C:\Program Files\'
+            - 'C:\Program Files (x86)\'
+            - 'C:\Windows\'
+    condition: selection and not filter_main_trusted_paths
+falsepositives:
+    - Legitimate games or input-device applications installed outside of Program Files
+level: low

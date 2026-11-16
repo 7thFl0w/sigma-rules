@@ -1,0 +1,49 @@
+title: Auto-Approved Executable Child Process Execution
+id: 75a8fdfc-a5bc-4e15-9258-8f170f90768d
+status: test
+description: Detects process creation events where the parent process is a known auto-elevated or UAC bypass-associated Windows binary frequently abused to execute payloads with elevated privileges without triggering User Account Control (UAC) prompts.
+references:
+    - https://medium.com/tenable-techblog/uac-bypass-by-mocking-trusted-directories-24a96675f6e
+author: 7thFl0w
+date: 2026-05-11 
+tags: 
+    - attack.privilege_escalation
+    - attack.t1548.002
+    - attack.execution
+    - attack.defense_evasion
+    - d3fend.d3-eal
+    - detection.uac_bypass
+    - detection.autoelevate_abuse
+    - detection.lolbin_abuse
+logsource:
+    product: windows
+    category: process_creation
+detection:
+    selection:
+        ParentImage|endswith:
+            - '\cttunesvr.exe'
+            - '\inetmgr.exe'
+            - '\migsetup.exe'
+            - '\mmc.exe'
+            - '\oobe.exe'
+            - '\pkgmgr.exe'
+            - '\provisionshare.exe'
+            - '\provisionstorage.exe'
+            - '\spinstall.exe'
+            - '\osk.exe'
+            - '\fodhelper.exe'
+            - '\sdclt.exe'
+            - '\wusa.exe'
+            - '\dccw.exe'
+            - '\slui.exe'
+            - '\changepk.exe'
+            - '\computerdefaults.exe'
+            - '\winsat.exe'
+            - '\wsreset.exe'
+    condition: selection
+falsepositives:
+    - Legitimate administrative activity spawning child processes from trusted Windows utilities
+    - Software installation or Windows feature configuration activity
+    - Enterprise management or automation tools invoking elevated Windows binaries
+    - Security products or EDR remediation workflows leveraging trusted auto-elevated binaries
+level: high
