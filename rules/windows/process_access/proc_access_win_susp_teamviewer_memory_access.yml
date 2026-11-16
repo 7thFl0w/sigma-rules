@@ -1,0 +1,33 @@
+title: Suspicious Process Access to TeamViewer With Memory Write Rights
+id: a91f4e6d-2c75-48b3-bd08-5e3c1a7f9d26
+status: test
+description: Detects process access to TeamViewer.exe with access rights that allow memory reading, writing or remote thread creation from a process outside the TeamViewer installation folders, which may indicate credential extraction from TeamViewer memory.
+references:
+    - https://github.com/vah13/extractTVpasswords
+    - https://attack.mitre.org/techniques/T1555/
+author: 7thFl0w
+date: 2026-11-10
+tags:
+    - attack.credential-access
+    - attack.t1555
+    - d3fend.d3-pa
+logsource:
+    product: windows
+    category: process_access
+detection:
+    selection:
+        TargetImage|endswith: '\TeamViewer.exe'
+        GrantedAccess:
+            - '0x147A'
+            - '0x1F3FFF'
+            - '0x1FFFFF'
+            - '0x1010'
+            - '0x1410'
+    filter_main_teamviewer:
+        SourceImage|startswith:
+            - 'C:\Program Files\TeamViewer\'
+            - 'C:\Program Files (x86)\TeamViewer\'
+    condition: selection and not filter_main_teamviewer
+falsepositives:
+    - Endpoint security products inspecting TeamViewer process memory
+level: medium

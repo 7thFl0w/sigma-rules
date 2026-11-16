@@ -1,0 +1,29 @@
+title: Remote Thread With Unbacked Start Address From User-Writable Path
+id: b5e475cf-324e-46df-a759-270e882007c1
+status: test
+description: CreateRemoteThread where the start address belongs to no module and the source process runs from a user-writable directory.
+references:
+    - https://attack.mitre.org/techniques/T1055/
+author: 7thFl0w
+date: 2026-10-28
+tags:
+    - attack.defense_evasion
+    - attack.privilege_escalation
+    - attack.t1055
+    - d3fend.detect
+    - d3fend.d3-sca
+    - d3fend.d3f-WindowsCreateRemoteThread
+logsource:
+    category: create_remote_thread
+    product: windows
+detection:
+    selection:
+        SourceImage|contains:
+            - '\Users\Public\'
+            - '\AppData\Roaming\'
+            - '\AppData\Local\Temp\'
+        StartModule: ''
+    condition: selection
+falsepositives:
+    - Software running from user-writable paths that legitimately creates remote threads
+level: medium

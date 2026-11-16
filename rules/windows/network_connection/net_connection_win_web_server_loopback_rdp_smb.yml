@@ -1,0 +1,59 @@
+title: IIS Worker Process Initiating Connection To Loopback RDP Or SMB Service
+id: 51046945-4c46-4905-87cf-5ca71b41486e
+status: test
+description: Detects web or application server processes initiating a TCP connection to the local RDP (3389) or SMB (445) service over loopback.
+references:
+    - https://github.com/SECFORCE/Tunna
+    - https://attack.mitre.org/techniques/T1572/
+    - https://attack.mitre.org/techniques/T1090/001/
+    - https://attack.mitre.org/techniques/T1021/001/
+    - https://attack.mitre.org/techniques/T1021/002/
+author: 7thFl0w
+date: 2026-11-02
+tags:
+    - attack.command-and-control
+    - attack.lateral-movement
+    - attack.t1572
+    - attack.t1090.001
+    - attack.t1021.001
+    - attack.t1021.002
+    - d3fend.detect
+    - d3fend.d3-nta
+    - d3fend.d3-anaa
+logsource:
+    product: windows
+    category: network_connection
+detection:
+    selection_webproc:
+        Image|endswith:
+        - '\w3wp.exe'
+        - '\httpd.exe'
+        - '\nginx.exe'
+        - '\java.exe'
+        - '\javaw.exe'
+        - '\javaws.exe'
+        - '\prunsrv.exe'
+        - '\caddy.exe'
+        - '\lighttpd.exe'
+        - '\h2o.exe'
+        - '\php.exe'
+        - '\php-cgi.exe'
+        - '\node.exe'
+        - '\iisexpress.exe'
+    selection_tomcat_jetty:
+        Image|re:
+            - '(?i)\\tomcat[^\\]*\.exe$'
+            - '(?i)\\jetty[^\\]*\.exe$'
+    selection_common:
+        Initiated: true
+        DestinationPort:
+            - 3389
+            - 445
+    selection_ipv4:
+        DestinationIp|startswith: '127.'
+    selection_ipv6:
+        DestinationIp: '::1'
+    condition: (selection_webproc or selection_tomcat_jetty) and selection_common and (selection_ipv4 or selection_ipv6)
+falsepositives:
+    - Unknown
+level: high

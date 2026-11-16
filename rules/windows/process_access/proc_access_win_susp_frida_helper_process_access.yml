@@ -1,0 +1,29 @@
+title: Process Access by Frida Helper Binary
+id: 3b8d5a1c-9e27-4c64-a1f0-7d2e6b94c8a3
+status: test
+description: Detects a process access event where the source image is a Frida injection helper binary, which Frida extracts to a user temp folder before attaching to or injecting into other processes.
+references:
+    - https://research.nccgroup.com/2020/07/29/tool-release-winstrument-an-instrumentation-framework-for-windows-application-assessments/
+    - https://frida.re/news/2020/12/01/frida-14-1-released
+    - https://attack.mitre.org/techniques/T1055/
+author: 7thFl0w
+date: 2026-11-10
+tags:
+    - attack.stealth
+    - attack.privilege-escalation
+    - attack.t1055
+    - d3fend.d3-pa
+logsource:
+    product: windows
+    category: process_access
+detection:
+    selection:
+        SourceImage|endswith:
+            - '\frida-winjector-helper-32.exe'
+            - '\frida-winjector-helper-64.exe'
+            - '\frida-helper-32.exe'
+            - '\frida-helper-64.exe'
+    condition: selection
+falsepositives:
+    - Developers or security testers legitimately instrumenting applications with Frida
+level: medium
