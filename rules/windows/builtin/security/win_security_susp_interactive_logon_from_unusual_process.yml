@@ -1,0 +1,33 @@
+title: Suspicious Interactive Logon Initiated by Non-Standard Process
+id: c3a91d5e-72b8-4f06-9e1d-54b6a0e8d2c7
+status: experimental
+description: Detects Security 4624 or 4625 events with LogonType 2 where the initiating process is not a standard Windows logon component, which may indicate an application or malware validating or abusing local credentials.
+references:
+    - https://attack.mitre.org/techniques/T1078/003/
+    - https://learn.microsoft.com/en-us/previous-versions/windows/it-pro/windows-10/security/threat-protection/auditing/event-4624
+author: 7thFl0w
+date: 2026-11-09
+tags:
+    - attack.credential_access
+    - attack.t1078.003
+    - d3f:UserBehaviorAnalysis
+logsource:
+    product: windows
+    service: security
+detection:
+    selection:
+        EventID:
+            - 4624
+            - 4625
+        LogonType: 2
+    filter_main_standard:
+        ProcessName|endswith:
+            - '\winlogon.exe'
+            - '\consent.exe'
+            - '\LogonUI.exe'
+            - '\svchost.exe'
+            - '\lsass.exe'
+    condition: selection and not filter_main_standard
+falsepositives:
+    - Third-party credential providers or applications that prompt for Windows credentials
+level: low
